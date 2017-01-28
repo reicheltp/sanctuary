@@ -1,0 +1,16 @@
+[
+{
+  "modid": "sanctuary",
+  "name": "Sanctuary",
+  "description": "Holy Minecraft",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Malefficus", "TerenceChill"],
+  "credits": "The glory gods who helped create Sanctuary",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
