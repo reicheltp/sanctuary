@@ -1,0 +1,6 @@
+{
+  "parent":"item/generated",
+  "textures":{
+    "layer0":"sanctuary:items/sacrifice_dagger"
+  }
+}
