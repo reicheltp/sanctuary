@@ -7,7 +7,6 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -93,7 +92,7 @@ public class CapabilitySpirit {
         @SubscribeEvent
         public static void onJoinWorld(EntityJoinWorldEvent event) {
             if (event.getEntity() instanceof EntityPlayerMP) {
-                synchronize((EntityPlayerMP) event.getEntity());
+                synchronise((EntityPlayerMP) event.getEntity());
             }
         }
 
@@ -122,11 +121,11 @@ public class CapabilitySpirit {
         @SubscribeEvent
         public static void playerChangeDimension(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent event) {
             if(event.player instanceof EntityPlayerMP){
-                synchronize((EntityPlayerMP) event.player);
+                synchronise((EntityPlayerMP) event.player);
             }
         }
 
-        private static void synchronize(EntityPlayerMP player){
+        private static void synchronise(EntityPlayerMP player){
             final ISpiritHandler spirit = getSpirit(player);
 
             if (spirit != null && player.isServerWorld()) {
