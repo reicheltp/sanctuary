@@ -1,4 +1,4 @@
-package sanctuary.spirit;
+package sanctuary.capability.spirit;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +15,9 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import sanctuary.SanctuaryMod;
-import sanctuary.utils.CapabilityUtils;
+import sanctuary.capability.SimpleCapabilityProvider;
+import sanctuary.util.CapabilityUtils;
+import scala.actors.threadpool.Arrays;
 
 import javax.annotation.Nullable;
 
@@ -31,7 +33,6 @@ public class CapabilitySpirit {
 
     public static final ResourceLocation ID = new ResourceLocation(SanctuaryMod.MODID, "Spirit");
 
-
     public static void register() {
         CapabilityManager.INSTANCE.register(ISpiritHandler.class, new Capability.IStorage<ISpiritHandler>() {
                     @Override
@@ -39,15 +40,16 @@ public class CapabilitySpirit {
                         if (!(instance instanceof SpiritHandler))
                             throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
 
-                        return new
+                        return new NBTTagIntArray(((SpiritHandler) instance).getStored());
                     }
 
                     @Override
                     public void readNBT(Capability<ISpiritHandler> capability, ISpiritHandler instance, EnumFacing side, NBTBase nbt) {
                         if (!(instance instanceof SpiritHandler))
                             throw new IllegalArgumentException("Can not deserialize to an instance that isn't the default implementation");
-                        int[] array = ((NBTTagIntArray) nbt).getIntArray();
 
+                        int[] array = ((NBTTagIntArray) nbt).getIntArray();
+                        ((SpiritHandler) instance).setStored(array);
                     }
                 }, SpiritHandler::new);
     }
@@ -57,19 +59,27 @@ public class CapabilitySpirit {
         return CapabilityUtils.getCapability(entity, SPIRIT_CAPABILITY, DEFAULT_FACING);
     }
 
-    public static ICapabilityProvider createProvider(ISpiritHandler handler){
-        return TODO ;
+    public static ICapabilityProvider createProvider(ISpiritHandler spirit){
+        return new SimpleCapabilityProvider<>(SPIRIT_CAPABILITY, DEFAULT_FACING, spirit);
     }
 
     @Mod.EventBusSubscriber
     public static class EventHandler {
 
         @SubscribeEvent
-        public void attachCapability(AttachCapabilitiesEvent<Entity> event)
+        public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event)
         {
             if (!(event.getObject() instanceof EntityPlayer)) return;
 
-            event.addCapability(ID, createProvider( TODO ));
+            final SpiritHandler spiritHandler = new SpiritHandler();
+
+            // TODO: Calculate capacity depending on player stats.
+            int[] capacity = new int[Spirit.SPIRITS_COUNT];
+            Arrays.fill(capacity, 1000);
+
+            spiritHandler.setCapacity(capacity);
+
+            event.addCapability(ID, createProvider( spiritHandler ));
         }
 
         /**
@@ -79,6 +89,8 @@ public class CapabilitySpirit {
          */
         @SubscribeEvent
         public static void playerClone(PlayerEvent.Clone event) {
+            if(!event.isWasDeath()) return;
+
             final SpiritHandler oldSpirit = (SpiritHandler) getSpirit(event.getOriginal());
             final SpiritHandler newSpirit = (SpiritHandler) getSpirit(event.getEntityPlayer());
 
@@ -94,10 +106,10 @@ public class CapabilitySpirit {
          */
         @SubscribeEvent
         public static void playerChangeDimension(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent event) {
-            final ISpiritHandler maxHealth = getSpirit(event.player);
+            final ISpiritHandler spirit = getSpirit(event.player);
 
-            if (maxHealth != null) {
-                maxHealth.synchronise();
+            if (spirit != null) {
+                // sync client server.
             }
         }
     }

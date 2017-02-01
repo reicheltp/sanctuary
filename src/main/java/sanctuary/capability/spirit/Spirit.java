@@ -1,4 +1,4 @@
-package sanctuary.spirit;
+package sanctuary.capability.spirit;
 
 /**
  * Spirit Types
@@ -10,7 +10,6 @@ public enum Spirit {
     ICE,
     NATURE,
     DEATH;
-
 
     public static final int SPIRITS_COUNT = 6;
 }

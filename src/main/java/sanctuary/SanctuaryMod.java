@@ -33,6 +33,8 @@ public class SanctuaryMod
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        ModCapabilities.registerCapabilities();
+
         network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 
         ModItems.initialiseItems();

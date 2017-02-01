@@ -1,4 +1,4 @@
-package sanctuary.spirit;
+package sanctuary.capability.spirit;
 
 import net.minecraft.entity.Entity;
 
@@ -9,10 +9,7 @@ public class SpiritHandler implements ISpiritHandler {
     private final int[] m_stored = new int[Spirit.SPIRITS_COUNT];
     private final int[] m_capacity = new int[Spirit.SPIRITS_COUNT];
 
-    private final Entity attachedEntity;
-
-    public SpiritHandler(Entity attachedEntity) {
-        this.attachedEntity = attachedEntity;
+    public SpiritHandler() {
     }
 
     public void setCapacity(int[] capacity){
@@ -84,12 +81,7 @@ public class SpiritHandler implements ISpiritHandler {
         return 0;
     }
 
-    public void synchronise() {
-        if (attachedEntity != null && !attachedEntity.getEntityWorld().isRemote) {
-            ((WorldServer) entity.getEntityWorld()).getEntityTracker().sendToTrackingAndSelf(entity, packet);
-        }
-    }
-
+    @Override
     public int[] getStored() {
         return m_stored;
     }

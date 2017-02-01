@@ -1,4 +1,4 @@
-package sanctuary.spirit;
+package sanctuary.capability.spirit;
 
 /**
  *  Spirit handler stores spiritual energy.
@@ -40,6 +40,12 @@ public interface ISpiritHandler {
 
     /**
      * Returns the amount of stored energy.
+     * @return Amount of stored energy.
+     */
+    int[] getStored();
+
+    /**
+     * Returns the amount of stored energy for given type.
      * @param type Spiritual energy type. Eg. Spirit.MOON
      * @return Amount of stored energy
      */
@@ -51,5 +57,12 @@ public interface ISpiritHandler {
      * @return Amount of energy which can be stored
      */
     int getMaxStored(Spirit type);
+
+    /**
+     * Updates the amount of stored energy. Usually used to sync client and server.
+     * For most use cases pull and push is sufficient.
+     * @param amount Amount of energy to store.
+     */
+    void setStored(int[] amount);
 }
 
