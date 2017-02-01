@@ -1,2 +1,6 @@
-item.holy_cross.name=Holy Cross
-item.sacrifice_dagger.name=Sacrifice Dagger
+# Creative Tabs
+itemGroup.sanctuary=Sanctuary
+
+# Items
+item.sanctuary:holy_cross.name=Holy Cross
+item.sanctuary:sacrificial_dagger.name=Sacrificial Dagger

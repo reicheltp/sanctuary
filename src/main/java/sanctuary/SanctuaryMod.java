@@ -6,26 +6,46 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import sanctuary.common.Proxy;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import sanctuary.init.*;
+import sanctuary.proxy.IProxy;
 
-@Mod(modid = SanctuaryMod.MODID, version = SanctuaryMod.VERSION)
+@Mod(modid = SanctuaryMod.MODID, version = SanctuaryMod.VERSION, name = SanctuaryMod.NAME,
+        acceptedMinecraftVersions = "[1.10.2]")
 public class SanctuaryMod
 {
     public static final String MODID = "sanctuary";
     public static final String VERSION = "1.0";
 
-    @SidedProxy(clientSide="sanctuary.client.Proxy", serverSide="sanctuary.server.Proxy")
-    private static Proxy proxy;
+    public static final String NAME = "Sanctuary";
+
+    public static final CreativeTabSanctuary creativeTab = new CreativeTabSanctuary();
+
+    @SidedProxy(clientSide="sanctuary.proxy.CombinedClientProxy", serverSide="sanctuary.proxy.DedicatedServerProxy")
+    public static IProxy proxy;
+
+    @Mod.Instance(MODID)
+    public static SanctuaryMod instance;
+
+    public static SimpleNetworkWrapper network;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
+
+        ModItems.initialiseItems();
+
         proxy.preInit();
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
+        ModRecipes.registerRecipes();
+        ModRecipes.removeCraftingRecipes();
+
         proxy.init();
     }
 
