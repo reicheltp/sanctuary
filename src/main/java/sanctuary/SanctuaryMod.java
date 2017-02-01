@@ -37,7 +37,10 @@ public class SanctuaryMod
 
         network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 
+        ModMessages.registerMessages();
+        ModBlocks.registerTileEntities();
         ModItems.initialiseItems();
+        ModFluids.registerFluidContainers();
 
         proxy.preInit();
     }

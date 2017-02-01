@@ -2,20 +2,24 @@ package sanctuary.capability.spirit;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import sanctuary.SanctuaryMod;
 import sanctuary.capability.SimpleCapabilityProvider;
+import sanctuary.network.MessageUpdatePlayerSpirit;
 import sanctuary.util.CapabilityUtils;
 import scala.actors.threadpool.Arrays;
 
@@ -83,7 +87,18 @@ public class CapabilitySpirit {
         }
 
         /**
-         * Copy the player's bonus max health when they respawn after dying or returning from the end.
+         * Synchronise a player's spirit to watching clients when they change dimensions.
+         * @param event The event
+         */
+        @SubscribeEvent
+        public static void onJoinWorld(EntityJoinWorldEvent event) {
+            if (event.getEntity() instanceof EntityPlayerMP) {
+                synchronize((EntityPlayerMP) event.getEntity());
+            }
+        }
+
+        /**
+         * Copy the player's spirit when they respawn after dying or returning from the end.
          *
          * @param event The event
          */
@@ -100,16 +115,23 @@ public class CapabilitySpirit {
         }
 
         /**
-         * Synchronise a player's max health to watching clients when they change dimensions.
+         * Synchronise a player's spirit to watching clients when they change dimensions.
          *
          * @param event The event
          */
         @SubscribeEvent
         public static void playerChangeDimension(net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent event) {
-            final ISpiritHandler spirit = getSpirit(event.player);
+            if(event.player instanceof EntityPlayerMP){
+                synchronize((EntityPlayerMP) event.player);
+            }
+        }
 
-            if (spirit != null) {
-                // sync client server.
+        private static void synchronize(EntityPlayerMP player){
+            final ISpiritHandler spirit = getSpirit(player);
+
+            if (spirit != null && player.isServerWorld()) {
+                final MessageUpdatePlayerSpirit packet = new MessageUpdatePlayerSpirit(spirit.getStored());
+                SanctuaryMod.network.sendTo (packet, player);
             }
         }
     }

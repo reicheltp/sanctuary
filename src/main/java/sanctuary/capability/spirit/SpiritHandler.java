@@ -2,6 +2,10 @@ package sanctuary.capability.spirit;
 
 import net.minecraft.entity.Entity;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 /**
  *  Spirit handler to store multiple spirit types.
  */
@@ -57,7 +61,7 @@ public class SpiritHandler implements ISpiritHandler {
             amount = diff;
         }
 
-        m_stored[type.ordinal()] -= amount;
+        m_stored[type.ordinal()] += amount;
         return amount;
     }
 
@@ -84,5 +88,12 @@ public class SpiritHandler implements ISpiritHandler {
     @Override
     public int[] getStored() {
         return m_stored;
+    }
+
+    @Override
+    public String toString() {
+        return IntStream.range(0, Spirit.SPIRITS_COUNT)
+                .mapToObj(i -> m_stored[i] + "/" + m_capacity[i])
+                .collect(Collectors.joining(", "));
     }
 }
